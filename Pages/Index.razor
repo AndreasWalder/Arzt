@@ -1,0 +1,64 @@
+﻿@page "/"
+@using System.Diagnostics;
+@using Arzt.BAL
+@using Arzt.Services
+@inject IJSRuntime JsRuntime
+@inject UserServices userServices 
+@inject NavigationManager NavigationManager
+
+<h1>Login</h1>
+
+ <br/>
+
+ <EditForm Model="@user" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+            
+       
+            <label><strong class="inputText">Name:</strong></label>
+            <InputText @bind-Value="user.Username" />
+         
+       
+         
+             <label><strong class="inputText">Passwort:</strong></label>
+            <InputText type="password" @bind-Value="user.Pass" />
+      
+
+            <br/>
+            <br/>
+
+            <h3>
+            <button type="submit">Login</button>
+            </h3>
+
+        </EditForm>
+
+@code {
+
+    private User user = new();
+
+    System.Collections.Generic.List<User> userList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Helper.Login.isLogin == true) {  JsRuntime.InvokeVoidAsync("alert", "You logged out!"); Helper.Login.isLogin = false; StateHasChanged(); }
+        userList = await Task.Run(() => userServices.GetAllAsync());
+    }
+
+    private void HandleValidSubmit()
+    {
+        foreach (var item in userList)
+        {
+            if (item.Username == user.Username && item.Pass == user.Pass)
+            {
+                Helper.Login.isLogin = true;
+                NavigationManager.NavigateTo("PatientPage");
+            }
+        }
+
+        if (Helper.Login.isLogin == false)
+        {
+            JsRuntime.InvokeVoidAsync("alert", $"<{user.Username}> not authorized to log in!"); // Alert
+        }
+    }
+}

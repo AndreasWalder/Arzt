@@ -1,0 +1,56 @@
+﻿@page "/ShowVisitPage"
+
+@using System.Diagnostics;
+@using Arzt.BAL
+@using Arzt.Services
+@inject IJSRuntime JsRuntime
+@inject VisitServices visitServices
+@inject PatientServices patientServices
+@inject MedicationServices medicationServices
+@inject VisitMedicationServices visitMedicationServices
+@inject NavigationManager NavigationManager
+
+<h1>Show Visits</h1>
+
+
+@if (visitMedicatioList == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Firstname</th>
+                <th>Surename</th>
+                <th>Medication</th>
+                <th>Date of Visit</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in visitMedicatioList)
+            {
+                <tr>
+                    <td>@item.Visit.Patient.Firstname</td>
+                    <td>@item.Visit.Patient.Surename</td>
+                    <td>@item.Medication.Name</td>
+                    <td>@item.Visit.DateOfVisit</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+
+@code {
+ 
+    System.Collections.Generic.List<VisitMedication> visitMedicatioList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Helper.Login.isLogin == false) { NavigationManager.NavigateTo("/");  await JsRuntime.InvokeVoidAsync("alert", "Please login first!"); return; }
+        visitMedicatioList = await Task.Run(() => visitMedicationServices.GetAllAsync());
+    }  
+}

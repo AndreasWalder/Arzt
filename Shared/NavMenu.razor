@@ -1,0 +1,61 @@
+﻿@inject NavigationManager NavigationManager
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Arzt</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            @if (Helper.Login.isLogin == true)
+            {
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                </NavLink>
+            }
+            else
+            {
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                </NavLink>
+            }      
+        </li>
+         <li class="nav-item px-3">
+            <NavLink class="nav-link" href="PatientPage">
+                <span class="oi oi-plus" aria-hidden="true"></span> Add Patient
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="VisitPage">
+                <span class="oi oi-plus" aria-hidden="true"></span> Visit of Patient
+            </NavLink>
+        </li>
+        
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="ShowVisitPage">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Show all Visits
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+       StateHasChanged();
+    }
+}

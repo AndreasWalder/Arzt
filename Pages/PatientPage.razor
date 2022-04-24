@@ -1,0 +1,92 @@
+﻿@page "/PatientPage"
+
+@using System.Diagnostics;
+@using Arzt.BAL
+@using Arzt.Services
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JsRuntime
+@inject PatientServices patientServices
+@inject NavigationManager NavigationManager
+
+<h1>Add Patient</h1>
+
+<EditForm Model="@patient" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+
+            
+            <label><strong>Firstname:</strong></label>
+            <InputText id="Firstname" @bind-Value="@patient.Firstname" />
+            <ValidationMessage For="@(() => @patient.Firstname)" />
+
+             <br/>
+
+             <label><strong>Surename:</strong></label>
+            <InputText id="Surename" @bind-Value="@patient.Surename" />
+            <ValidationMessage For="@(() => @patient.Surename)" />
+
+             <br/>
+
+             <label><strong>Birthday:</strong></label>
+             <InputDate id="Birthday" @bind-Value="@patient.Birthday"/>
+             <ValidationMessage For="@(() => @patient.Birthday)" />
+
+             <br/
+
+             <label><strong>Gender: </strong></label>
+             <InputSelect @bind-Value="@patient.selectedGender">
+			        <option value="">select</option>
+                    <option value="false">Female</option>
+		            <option value="true">Male</option>
+            </InputSelect>
+            <ValidationMessage For="@(() => @patient.selectedGender)" />
+
+             <br/>
+
+             <label><strong>Address:</strong></label>
+             <InputText id="Gender" @bind-Value="@patient.Address" />
+             <ValidationMessage For="@(() => @patient.Address)" />
+
+            <br/>
+
+             <label><strong>ZIP:</strong></label>
+             <InputNumber id="Zip" @bind-Value="@patient.Zip" />
+             <ValidationMessage For="@(() => @patient.Zip)" />
+
+            <br/>
+
+             <label><strong>City:</strong></label>
+             <InputText id="City" @bind-Value="@patient.City" />
+             <ValidationMessage For="@(() => @patient.City)" />
+
+            <br/>
+            <br/>
+            <button type="submit">add Patient</button>
+</EditForm>
+
+@code {
+    private Patient patient = new Patient();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Helper.Login.isLogin == false) { NavigationManager.NavigateTo("/");  await JsRuntime.InvokeVoidAsync("alert", "Please login first!"); return; }
+    }
+
+    protected async void Submit()
+    {
+        try
+        {
+           patient.Gender = Convert.ToBoolean(patient.selectedGender);
+           await patientServices.UpdateAsync(patient);
+           await JsRuntime.InvokeVoidAsync("alert", "patient created!");
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
+       
+
+
+	}
+    
+}

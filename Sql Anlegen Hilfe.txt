@@ -1,0 +1,29 @@
+dotnet ef dbcontext scaffold "Server=93.90.193.178; Database=cookbook; User ID=MyTempLogin; Password=Test1234!; TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o BAL
+
+dotnet ef dbcontext scaffold "Server=ANDREASPC\SQLEXPRESS; Database=Gartencenter; Integrated Security=True; TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o BAL
+
+dotnet ef dbcontext scaffold "Server=ANDREASPC\SQLEXPRESS; Database=Videothek; Integrated Security=True; TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o BAL
+
+
+Microsoft.EntityFrameworkCore
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Tools
+
+dotnet ef dbcontext scaffold "Server=93.90.193.178; Database=ArztAndreas; User ID=MyTempLogin; Password=Test1234!; TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o BAL
+
+
+Scaffold-DbContext "Server=93.90.193.178;Database=myTest;User Id=MyTempLogin;Password=Test1234!;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -o Data
+
+
+Einzelne Konten
+Update-Database
+
+docker run -d -p 12344:80 api
+http://localhost:12344/swagger/index.html
+
+docker run -d -p 12344:80 blazorcookbook
+
+http://api/swagger/index.html
+
+
+docker-compose up

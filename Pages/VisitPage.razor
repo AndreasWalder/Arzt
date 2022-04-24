@@ -1,0 +1,122 @@
+﻿@page "/VisitPage"
+
+@using System.Diagnostics;
+@using Arzt.BAL
+@using Arzt.Services
+@using Microsoft.AspNetCore.Mvc
+@using System.ComponentModel.DataAnnotations
+@inject IJSRuntime JsRuntime
+@inject VisitServices visitServices
+@inject PatientServices patientServices
+@inject MedicationServices medicationServices
+@inject VisitMedicationServices visitMedicationServices
+@inject NavigationManager NavigationManager
+
+<h1>Add Visit</h1>
+
+<EditForm Model="@visit" OnValidSubmit="@HandleValidSubmit">
+        <DataAnnotationsValidator />
+
+            
+            <label><strong>select Patient:</strong></label>      
+            <InputSelect @bind-Value="@visit.selectedPatientId">
+           
+	            @if (patientList != null)
+	            {
+                    
+			        <option value="">select</option>
+		            @foreach (var item in patientList)
+		            {
+			            <option value="@item.Id">@item.Firstname / @item.Surename</option>
+		            }
+	            }	
+            </InputSelect>
+
+             <br/>
+
+            <label><strong>select Medication:</strong></label>
+            <InputSelect @bind-Value="@visit.selectedMedicationId">
+	            @if (medicationList != null)
+	            {
+                    
+			        <option value="">select</option>
+		            @foreach (var item in medicationList)
+		            {
+			            <option value="@item.Id">@item.Name</option>
+		            }
+	            }	
+            </InputSelect>
+
+             <br/>
+
+            <label><strong>Date of Visit:</strong></label>
+            <InputDate id="Date" @bind-Value="@visit.DateOfVisit"/>
+
+            <label>Time:</label>
+            <input id="txtTime" type="time" @bind="@visit.DateOfVisit" />
+             <ValidationMessage For="@(() => @visit.DateOfVisit)" />
+
+            <br/>
+
+            <label><strong>Diagnostic Report:</strong></label>
+            <InputText id="Title" @bind-Value="@visit.DiagnosticReport" />
+            <ValidationMessage For="@(() => @visit.DiagnosticReport)" />
+
+            <br/>
+            <button type="submit">add Visit</button>
+</EditForm>
+
+@code {
+
+
+    private Visit visit = new Visit();
+    private VisitMedication visitMedication = new VisitMedication();
+
+    System.Collections.Generic.List<Patient> patientList;
+    System.Collections.Generic.List<Medication> medicationList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Helper.Login.isLogin == false) { NavigationManager.NavigateTo("/");  await JsRuntime.InvokeVoidAsync("alert", "Please login first!"); return; }
+        patientList = await Task.Run(() => patientServices.GetAllAsync());
+        medicationList = await Task.Run(() => medicationServices.GetAllAsync());
+    }
+
+    protected async void HandleValidSubmit()
+    {
+        try
+        {
+            if (visit.selectedMedicationId == null || visit.selectedPatientId == null)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "please select Medication and Patient");
+                return;
+            }
+
+            if (visit.DiagnosticReport == null)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "please enter a Diagnostic Report");
+                return;
+            }
+
+
+            visit.PatientId = visit.selectedPatientId.GetValueOrDefault();
+            await visitServices.UpdateAsync(visit);
+
+            visitMedication.VisitId = visit.Id;
+            visitMedication.MedicationId = visit.selectedMedicationId.GetValueOrDefault();
+
+            await visitMedicationServices.UpdateAsync(visitMedication);
+
+            await JsRuntime.InvokeVoidAsync("alert", "visit created!");
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
+       
+
+
+	}
+    
+}
